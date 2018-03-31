@@ -1,10 +1,10 @@
 package com.tarena.fly;
 
-import java.awt.Font;
-import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.MemoryImageSource;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.Timer;
@@ -17,8 +17,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class ShootGame extends JPanel {
-	public static final int WIDTH = 400; // 面板宽
-	public static final int HEIGHT = 654; // 面板高
+	public static final int WIDTH = 600; // 面板宽
+	public static final int HEIGHT = 800; // 面板高
 	/** 游戏的当前状态: START RUNNING PAUSE GAME_OVER */
 	private int state;
 	private static final int START = 0;
@@ -46,18 +46,15 @@ public class ShootGame extends JPanel {
 
 	static { // 静态代码块，初始化图片资源
 		try {
-			background = ImageIO.read(ShootGame.class
-					.getResource("background.png"));
-			start = ImageIO.read(ShootGame.class.getResource("start.png"));
-			airplane = ImageIO
-					.read(ShootGame.class.getResource("airplane.png"));
-			bee = ImageIO.read(ShootGame.class.getResource("bee.png"));
-			bullet = ImageIO.read(ShootGame.class.getResource("bullet.png"));
-			hero0 = ImageIO.read(ShootGame.class.getResource("hero0.png"));
-			hero1 = ImageIO.read(ShootGame.class.getResource("hero1.png"));
-			pause = ImageIO.read(ShootGame.class.getResource("pause.png"));
-			gameover = ImageIO
-					.read(ShootGame.class.getResource("gameover.png"));
+			background = ImageIO.read(ShootGame.class.getResource("/image/background.png"));
+			start = ImageIO.read(ShootGame.class.getResource("/image/start.png"));
+			airplane = ImageIO.read(ShootGame.class.getResource("/image/airplane.jpg"));
+			bee = ImageIO.read(ShootGame.class.getResource("/image/bee.png"));
+			bullet = ImageIO.read(ShootGame.class.getResource("/image/bullet.png"));
+			hero0 = ImageIO.read(ShootGame.class.getResource("/image/hero0.png"));
+			hero1 = ImageIO.read(ShootGame.class.getResource("/image/hero1.png"));
+			pause = ImageIO.read(ShootGame.class.getResource("/image/pause.png"));
+			gameover = ImageIO.read(ShootGame.class.getResource("/image/gameover.png"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -101,7 +98,7 @@ public class ShootGame extends JPanel {
 		int x = 10; // x坐标
 		int y = 25; // y坐标
 		Font font = new Font(Font.SANS_SERIF, Font.BOLD, 22); // 字体
-		g.setColor(new Color(0xFF0000));
+		g.setColor(new Color(0xFF9072));
 		g.setFont(font); // 设置字体
 		g.drawString("SCORE:" + score, x, y); // 画分数
 		y=y+20; // y坐标增20
@@ -206,7 +203,8 @@ public class ShootGame extends JPanel {
 	/** 飞行物入场 */
 	public void enterAction() {
 		flyEnteredIndex++;
-		if (flyEnteredIndex % 40 == 0) { // 400毫秒生成一个飞行物--10*40
+		int flytime = 100; // 400毫秒生成一个飞行物
+		if (flyEnteredIndex % (flytime/10) == 0) {
 			FlyingObject obj = nextOne(); // 随机生成一个飞行物
 			flyings = Arrays.copyOf(flyings, flyings.length + 1);
 			flyings[flyings.length - 1] = obj;
@@ -240,11 +238,11 @@ public class ShootGame extends JPanel {
 	/** 射击 */
 	public void shootAction() {
 		shootIndex++;
-		if (shootIndex % 30 == 0) { // 300毫秒发一颗
+		int shootTime = 500; // // 发射间隔 ms
+		if (shootIndex % (shootTime/10) == 0) {
 			Bullet[] bs = hero.shoot(); // 英雄打出子弹
 			bullets = Arrays.copyOf(bullets, bullets.length + bs.length); // 扩容
-			System.arraycopy(bs, 0, bullets, bullets.length - bs.length,
-					bs.length); // 追加数组
+			System.arraycopy(bs, 0, bullets, bullets.length - bs.length,bs.length); // 追加数组
 		}
 	}
 
@@ -301,7 +299,6 @@ public class ShootGame extends JPanel {
 				FlyingObject t = flyings[index];
 				flyings[index] = flyings[flyings.length - 1];
 				flyings[flyings.length - 1] = t; // 碰上的与最后一个飞行物交换
-
 				flyings = Arrays.copyOf(flyings, flyings.length - 1); // 删除碰上的飞行物
 			}
 		}
@@ -321,11 +318,9 @@ public class ShootGame extends JPanel {
 		}
 		if (index != -1) { // 有击中的飞行物
 			FlyingObject one = flyings[index]; // 记录被击中的飞行物
-
 			FlyingObject temp = flyings[index]; // 被击中的飞行物与最后一个飞行物交换
 			flyings[index] = flyings[flyings.length - 1];
 			flyings[flyings.length - 1] = temp;
-
 			flyings = Arrays.copyOf(flyings, flyings.length - 1); // 删除最后一个飞行物(即被击中的)
 
 			// 检查one的类型(敌人加分，奖励获取)
@@ -342,6 +337,8 @@ public class ShootGame extends JPanel {
 				case Award.LIFE:
 					hero.addLife(); // 设置加命
 					break;
+				case 2:
+					hero.subtractLife();
 				}
 			}
 		}
@@ -355,11 +352,12 @@ public class ShootGame extends JPanel {
 	public static FlyingObject nextOne() {
 		Random random = new Random();
 		int type = random.nextInt(20); // [0,20)
-		if (type < 4) {
+		if (type < 2) {
 			return new Bee();
 		} else {
 			return new Airplane();
 		}
 	}
+
 
 }

@@ -3,38 +3,37 @@ package com.tarena.fly;
 import java.util.Random;
 
 /**
- * µÐ·É»ú: ÊÇ·ÉÐÐÎï£¬Ò²ÊÇµÐÈË
+ * æ•Œé£žæœº: æ˜¯é£žè¡Œç‰©ï¼Œä¹Ÿæ˜¯æ•Œäºº
  */
 public class Airplane extends FlyingObject implements Enemy {
-	private int speed = 3;  //ÒÆ¶¯²½Öè
-	
-	/** ³õÊ¼»¯Êý¾Ý */
+	private int speed = 3;  //ç§»åŠ¨æ­¥éª¤
+
+	/** åˆå§‹åŒ–æ•°æ® */
 	public Airplane(){
 		this.image = ShootGame.airplane;
 		width = image.getWidth();
 		height = image.getHeight();
-		y = -height;          
+		y = -height;
 		Random rand = new Random();
 		x = rand.nextInt(ShootGame.WIDTH - width);
 	}
-	
-	/** »ñÈ¡·ÖÊý */
+
+	/** èŽ·å–åˆ†æ•° */
 	@Override
-	public int getScore() {  
+	public int getScore() {
 		return 5;
 	}
 
-	/** //Ô½½ç´¦Àí */
+	/** //è¶Šç•Œå¤„ç† */
 	@Override
-	public 	boolean outOfBounds() {   
+	public 	boolean outOfBounds() {
 		return y>ShootGame.HEIGHT;
 	}
 
-	/** ÒÆ¶¯ */
+	/** ç§»åŠ¨ */
 	@Override
-	public void step() {   
+	public void step() {
 		y += speed;
 	}
 
 }
-
